@@ -1,0 +1,9 @@
+.env*
+!.env.example
+/.idea/
+/node_modules/
+/dist/
+/dev-build/*
+package-lock.json
+/coverage/
+
