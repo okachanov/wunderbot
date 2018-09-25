@@ -1,4 +1,4 @@
-import { Controller, Get} from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ApiUseTags } from '@nestjs/swagger';
 import { WunderlistService } from './wunderlist.service';
 
@@ -9,9 +9,16 @@ export class WunderlistController {
   constructor( private readonly wunderlistService: WunderlistService){
    }
 
-  @Get('lists')
-  async get(): Promise<any[]> {
-    return await this.wunderlistService.getLists();
+  @Get('auth')
+  async get(): Promise<any> {
+    console.log('get auth');
+    return true;
+  }
+
+  @Post('auth')
+  async post(): Promise<any> {
+    console.log('post auth');
+    return true;
   }
 
 }

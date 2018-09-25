@@ -7,12 +7,7 @@ export class WunderlistService {
 
   private apiClient;
 
-  constructor(@Inject('ConfigProvider') config){
-    this.apiClient = new Wunderlist({
-      clientId: config.get(`wunderlist.appId`),
-      clientSecret: config.get(`wunderlist.appSecret`),
-      accessToken: config.get(`wunderlist.accessToken`),
-    });
+  constructor(@Inject('ConfigProvider') private readonly config){
   }
 
   async getLists(){
@@ -45,6 +40,13 @@ export class WunderlistService {
 
       await this.addTask(task);
     }
+  }
+
+  getAuthUrl(state: string = ''): string {
+    const callbackUrl = this.config.get(`appWebUrl`) + `/wunderlist/auth`;
+    const clientId = this.config.get(`wunderlist.appId`);
+
+    return `https://www.wunderlist.com/oauth/authorize?client_id=${clientId}&redirect_uri=${callbackUrl}&state=${state}`;
   }
 
 }
