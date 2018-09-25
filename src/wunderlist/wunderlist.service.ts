@@ -42,7 +42,7 @@ export class WunderlistService {
     }
   }
 
-  getAuthUrl(state: string = ''): string {
+  getAuthUrl(state: string | number = ''): string {
     const callbackUrl = this.config.get(`appWebUrl`) + `api/v1/wunderlist/auth`;
     const clientId = this.config.get(`wunderlist.appId`);
 

@@ -11,7 +11,7 @@ export class User {
   telegramUserId: number;
 
   @Index()
-  @Column({type: 'bigint'})
+  @Column({type: 'bigint', nullable: true})
   telegramChatId: number;
 
   @Column({

@@ -43,7 +43,7 @@ export class TelegramService implements OnModuleInit {
     user.wunderlistToken = wuAuthToken;
     await this.usersRepository.save(user);
 
-    await this.botClient.sendMessage(user.telegramChatId, authUrl);
+    await this.botClient.sendMessage(user.telegramChatId, wuAuthToken);
   }
 
   async getUserByTelegramUserId(userId: number): Promise<User> {
