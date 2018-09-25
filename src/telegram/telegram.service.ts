@@ -6,6 +6,7 @@ import { Message } from 'node-telegram-bot-api';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EventEmitterService } from '../ee/eventEmitter.service';
 
 @Injectable()
 export class TelegramService implements OnModuleInit {
@@ -15,6 +16,7 @@ export class TelegramService implements OnModuleInit {
   constructor(
     @Inject('ConfigProvider') config,
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    private readonly ee: EventEmitterService,
     private readonly wunderlistService: WunderlistService,
   ){
     this.botClient = new TelegramBot(config.get(`telegram.token`), {polling: true});
@@ -27,9 +29,21 @@ export class TelegramService implements OnModuleInit {
     this.botClient.onText(/\/start/, async (message: Message, match: string[]) => {
       await this.onBotStartMessage(message);
     });
+    this.ee.on(`access_token_received`, async (tgUserId: number, wuAuthToken: string) => {
+      await this.onAuthTokenReceived(tgUserId, wuAuthToken);
+    });
   }
 
   async onBotMessage(message: Message): Promise<any> {
+  }
+
+  async onAuthTokenReceived(tgUserId: number, wuAuthToken: string): Promise<any> {
+    const user = await this.getUserByTelegramUserId(tgUserId);
+
+    user.wunderlistToken = wuAuthToken;
+    await this.usersRepository.save(user);
+
+    await this.botClient.sendMessage(user.telegramChatId, authUrl);
   }
 
   async getUserByTelegramUserId(userId: number): Promise<User> {
@@ -45,11 +59,14 @@ export class TelegramService implements OnModuleInit {
 
   async onBotStartMessage(message: Message): Promise<any> {
     const tgUserId = message.from.id;
+    const chatId = message.chat.id;
     const user = await this.getUserByTelegramUserId(tgUserId);
+
+    user.telegramChatId = chatId;
+    await this.usersRepository.save(user);
 
     if (!user.wunderlistToken){
       const authUrl = this.wunderlistService.getAuthUrl(tgUserId);
-      const chatId = message.chat.id;
 
       await this.botClient.sendMessage(chatId, authUrl);
     }

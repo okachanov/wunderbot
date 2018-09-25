@@ -10,6 +10,10 @@ export class User {
   @Column({type: 'bigint'})
   telegramUserId: number;
 
+  @Index()
+  @Column({type: 'bigint'})
+  telegramChatId: number;
+
   @Column({
     type: 'varchar',
     length: 255,

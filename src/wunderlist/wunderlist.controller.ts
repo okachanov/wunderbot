@@ -1,24 +1,37 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import * as superagent from 'superagent';
+
+import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { ApiUseTags } from '@nestjs/swagger';
-import { WunderlistService } from './wunderlist.service';
+import { OauthCallbackDto } from './wunderlist.dto';
+import { EventEmitterService } from '../ee/eventEmitter.service';
 
 @Controller('wunderlist')
 @ApiUseTags('Wunderlist')
 export class WunderlistController {
 
-  constructor( private readonly wunderlistService: WunderlistService){
+  constructor(
+    @Inject('ConfigProvider') private readonly config,
+    private readonly ee: EventEmitterService){
    }
 
   @Get('auth')
-  async get(): Promise<any> {
-    console.log('get auth');
-    return true;
-  }
+  async oauthCallback(@Query() query: OauthCallbackDto): Promise<any> {
 
-  @Post('auth')
-  async post(): Promise<any> {
-    console.log('post auth');
-    return true;
+    const tgUserId = query.state;
+    const authCode = query.code;
+
+    const response = await superagent
+      .post(`https://www.wunderlist.com/oauth/access_token`)
+      .send({
+        client_id: this.config.get(`wunderlist.appId`),
+        client_secret: this.config.get(`wunderlist.appSecret`),
+        code: authCode,
+      });
+
+    const { body: {access_token} } = response;
+
+    return this.ee.emit(`access_token_received`, tgUserId, access_token);
+
   }
 
 }
