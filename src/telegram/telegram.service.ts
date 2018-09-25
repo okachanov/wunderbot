@@ -48,7 +48,7 @@ export class TelegramService implements OnModuleInit {
     const user = await this.getUserByTelegramUserId(tgUserId);
 
     if (!user.wunderlistToken){
-      const authUrl = this.wunderlistService.getAuthUrl();
+      const authUrl = this.wunderlistService.getAuthUrl(tgUserId);
       const chatId = message.chat.id;
 
       await this.botClient.sendMessage(chatId, authUrl);

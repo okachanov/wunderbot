@@ -43,7 +43,7 @@ export class WunderlistService {
   }
 
   getAuthUrl(state: string = ''): string {
-    const callbackUrl = this.config.get(`appWebUrl`) + `/wunderlist/auth`;
+    const callbackUrl = this.config.get(`appWebUrl`) + `wunderlist/auth`;
     const clientId = this.config.get(`wunderlist.appId`);
 
     return `https://www.wunderlist.com/oauth/authorize?client_id=${clientId}&redirect_uri=${callbackUrl}&state=${state}`;
