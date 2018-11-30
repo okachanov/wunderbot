@@ -1,6 +1,5 @@
 import { config } from './config';
 import { types } from 'pg';
-
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
@@ -10,6 +9,7 @@ import { ConfigModule } from './config/config.module';
 import { CacheModule } from './cache/cache.module';
 import { WunderlistModule } from './wunderlist/wunderlist.module';
 import { TelegramModule } from './telegram/telegram.module';
+import { UsersModule } from './users/users.module';
 
 let cacheOptions;
 if (config.get(`db.cache.enabled`)) {
@@ -59,6 +59,7 @@ if (config.get(`db.url`)){
     CacheModule,
     WunderlistModule,
     TelegramModule,
+    UsersModule,
   ],
 })
 export class AppModule implements OnModuleInit {
