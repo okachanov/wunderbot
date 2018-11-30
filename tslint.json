@@ -43,9 +43,7 @@
 		"object-literal-sort-keys": false,
 		"no-unused-expression": false,
 		"no-trailing-whitespace": false,
-		"max-classes-per-file": [
-			false
-		],
+		"max-classes-per-file": false,
 		"variable-name": [
 			false
 		],
