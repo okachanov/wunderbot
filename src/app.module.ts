@@ -10,6 +10,7 @@ import { CacheModule } from './cache/cache.module';
 import { WunderlistModule } from './wunderlist/wunderlist.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { UsersModule } from './users/users.module';
+import { WunderbotModule } from './wunderbot/wunderbot.module';
 
 let cacheOptions;
 if (config.get(`db.cache.enabled`)) {
@@ -60,6 +61,7 @@ if (config.get(`db.url`)){
     WunderlistModule,
     TelegramModule,
     UsersModule,
+    WunderbotModule,
   ],
 })
 export class AppModule implements OnModuleInit {
