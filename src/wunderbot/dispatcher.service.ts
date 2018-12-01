@@ -19,7 +19,7 @@ export class WunderbotDispatcherService implements OnModuleInit{
 
     this.botClient = new TelegramBot(config.get(`telegram.token`), {polling: true});
 
-    this.botClient.on('message', async (message) => {
+    this.botClient.on('message', async (message: Message) => {
       await this.onBotMessage(message);
     });
 
@@ -37,8 +37,11 @@ export class WunderbotDispatcherService implements OnModuleInit{
     Logger.log('Dispatcher started', 'WunderbotDispatcherService');
   }
 
-  async onBotMessage(message){
-    await this.wunderlistService.addTaskFromTelegramMessage(message);
+  async onBotMessage(message: Message){
+    const tgUserId = message.from.id;
+    const user = await this.usersService.getUserByTelegramUserId(tgUserId);
+
+    await this.wunderlistService.addTaskFromTelegramMessage(message, user);
   }
 
   async onAuthTokenReceived(tgUserId: number, wuAuthToken: string): Promise<any> {
