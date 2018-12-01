@@ -1,7 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import * as Wunderlist from 'wunderlist-api';
-
 @Injectable()
 export class WunderlistService {
 
