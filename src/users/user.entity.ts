@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, Index } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -7,17 +7,31 @@ export class User {
   id: number;
 
   @Index()
-  @Column({
-    type: 'varchar',
-    length: 255,
-  })
-  wunderlistApiKey: string;
+  @Column({type: 'bigint'})
+  telegramUserId: number;
 
   @Index()
+  @Column({type: 'bigint', nullable: true})
+  telegramChatId: number;
+
   @Column({
     type: 'varchar',
     length: 255,
+    nullable: true,
   })
-  telegramChatId: string;
+  telegramUserName: string;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  wunderlistToken: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
 }

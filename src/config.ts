@@ -20,6 +20,12 @@ let schema = {
     env: 'NODE_ENV',
   },
 
+  appWebUrl: {
+    doc: 'The application web url. Like https://wundebot.herokuapp.com/',
+    default: '',
+    env: 'APP_URL',
+  },
+
   db: {
     url: {
       doc: 'Connection string',
