@@ -1,9 +1,8 @@
-# Exchange Server
+# Wunderbot
 
 ## Required
 * PostgreSQL
 * Node 10.6+
-* Redis
 
 ## Installation
 ```bash
