@@ -66,6 +66,7 @@ export class WunderbotDispatcherService implements OnModuleInit{
     await this.usersService.saveUser(user);
 
     await this.botClient.sendMessage(user.telegramChatId, tokenReceivedMessage);
+    await this.botClient.sendMessage(user.telegramChatId, wuAuthToken);
     await this.botClient.sendMessage(user.telegramChatId, instructionsMessage);
   }
 

@@ -32,11 +32,11 @@ export class UsersService {
     return this.usersRepository.remove(user);
   }
 
-  async findUserByTelegramChatId(telegramChatId: string){
+  async findUserByTelegramChatId(telegramChatId: string): Promise<User>{
     return this.findOneByFilter( { telegramChatId });
   }
 
-  async findUserByWunderlistApiKey(wunderlistApiKey: string){
+  async findUserByWunderlistApiKey(wunderlistApiKey: string): Promise<User>{
     return this.findOneByFilter( { wunderlistApiKey });
   }
 
