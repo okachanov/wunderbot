@@ -11,10 +11,11 @@ export class WunderlistService {
 
   async getLists(apiClient: WunderlistClient){
     const { body } = await apiClient.getLists();
+    console.log(body);
     return JSON.parse(body);
   }
 
-  getApiClientByUserToken(wunderlistToken: string){
+  getApiClientByUserToken(wunderlistToken: string): WunderlistClient{
     return new WunderlistClient({
       clientId: this.config.get(`wunderlist.appId`),
       clientSecret: this.config.get(`wunderlist.appSecret`),
@@ -24,6 +25,7 @@ export class WunderlistService {
 
   async addTaskFromTelegramMessage(message: Message, user: User){
 
+    console.log(message, user);
     const client = this.getApiClientByUserToken(user.wunderlistToken);
 
     const lists = await this.getLists(client);
