@@ -48,8 +48,12 @@ export class WunderbotDispatcherService implements OnModuleInit{
       await this.wunderlistService.addTaskFromTelegramMessage(message, user);
       await this.botClient.sendMessage(user.telegramChatId, taskAddedMessage);
     }catch (error) {
-      await this.botClient.sendMessage(user.telegramChatId, taskErrorMessage);
-      await this.botClient.sendMessage(user.telegramChatId, error);
+      try{
+        await this.botClient.sendMessage(user.telegramChatId, taskErrorMessage);
+        await this.botClient.sendMessage(user.telegramChatId, JSON.stringify(error));
+      }catch (e) {
+        console.error(e);
+      }
     }
 
   }
