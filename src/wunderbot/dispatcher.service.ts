@@ -21,7 +21,9 @@ export class WunderbotDispatcherService implements OnModuleInit{
     this.botClient = new TelegramBot(config.get(`telegram.token`), {polling: true});
 
     this.botClient.on('message', async (message: Message) => {
-      await this.onBotMessage(message);
+      if ( message.text !== '/start'){
+        await this.onBotMessage(message);
+      }
     });
 
     this.botClient.onText(/\/start/, async (message: Message, match: string[]) => {
@@ -70,12 +72,10 @@ export class WunderbotDispatcherService implements OnModuleInit{
     user.telegramChatId = chatId;
     await this.usersService.saveUser(user);
 
-    if (!user.wunderlistToken){
-      const authUrl = this.wunderlistService.getAuthUrl(tgUserId);
+    const authUrl = this.wunderlistService.getAuthUrl(tgUserId);
 
-      await this.botClient.sendMessage(chatId, welcomeMessage);
-      await this.botClient.sendMessage(chatId, authUrl);
-    }
+    await this.botClient.sendMessage(chatId, welcomeMessage);
+    await this.botClient.sendMessage(chatId, authUrl);
 
   }
 
