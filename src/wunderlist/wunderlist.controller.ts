@@ -29,6 +29,7 @@ export class WunderlistController {
       });
 
     const { body: {access_token} } = response;
+    console.log(response);
 
     return this.ee.emit(`access_token_received`, tgUserId, access_token);
 
