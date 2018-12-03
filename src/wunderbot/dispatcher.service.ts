@@ -51,6 +51,7 @@ export class WunderbotDispatcherService implements OnModuleInit{
       try{
         await this.botClient.sendMessage(user.telegramChatId, taskErrorMessage);
         await this.botClient.sendMessage(user.telegramChatId, JSON.stringify(error));
+        console.error(error);
       }catch (e) {
         console.error(e);
       }

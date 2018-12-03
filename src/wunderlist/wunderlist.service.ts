@@ -41,7 +41,10 @@ export class WunderlistService {
       };
 
       const { body } = await client.createTask(task.list_id, task.title, task.completed, task.starred, task.due_date);
-      await client.createNote(body.id, task.note);
+      console.log('body', body);
+
+      const result = await client.createNote(body.id, task.note);
+      console.log('result', result);
 
       return body;
 
