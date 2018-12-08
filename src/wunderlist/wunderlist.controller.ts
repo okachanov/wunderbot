@@ -32,7 +32,8 @@ export class WunderlistController {
       const { body: {access_token} } = response;
 
       if (access_token){
-        return this.ee.emit(`access_token_received`, tgUserId, access_token);
+        this.ee.emit(`access_token_received`, tgUserId, access_token);
+        return "Token received. You can close this tab";
       }else {
         throw new Error(`API returned no access_token`);
       }
