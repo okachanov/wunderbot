@@ -4,7 +4,14 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import { Message } from 'node-telegram-bot-api';
 import { EventEmitterService } from '../ee/eventEmitter.service';
 import { UsersService } from '../users/users.service';
-import { instructionsMessage, taskAddedMessage, taskErrorMessage, tokenReceivedMessage, welcomeMessage } from '../telegram/telegram.messages';
+import {
+  contributeMessage,
+  instructionsMessage,
+  taskAddedMessage,
+  taskErrorMessage,
+  tokenReceivedMessage,
+  welcomeMessage,
+} from '../telegram/telegram.messages';
 
 @Injectable()
 export class WunderbotDispatcherService implements OnModuleInit{
@@ -67,6 +74,7 @@ export class WunderbotDispatcherService implements OnModuleInit{
 
     await this.botClient.sendMessage(user.telegramChatId, tokenReceivedMessage);
     await this.botClient.sendMessage(user.telegramChatId, instructionsMessage);
+    await this.botClient.sendMessage(user.telegramChatId, contributeMessage);
   }
 
   async onBotStartMessage(message: Message): Promise<any> {
