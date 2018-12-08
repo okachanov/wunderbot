@@ -4,6 +4,14 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import { Message } from 'node-telegram-bot-api';
 import { EventEmitterService } from '../ee/eventEmitter.service';
 import { UsersService } from '../users/users.service';
+import {
+  contributeMessage,
+  instructionsMessage,
+  taskAddedMessage,
+  taskErrorMessage,
+  tokenReceivedMessage,
+  welcomeMessage,
+} from '../telegram/telegram.messages';
 
 @Injectable()
 export class WunderbotDispatcherService implements OnModuleInit{
@@ -19,8 +27,10 @@ export class WunderbotDispatcherService implements OnModuleInit{
 
     this.botClient = new TelegramBot(config.get(`telegram.token`), {polling: true});
 
-    this.botClient.on('message', async (message) => {
-      await this.onBotMessage(message);
+    this.botClient.on('message', async (message: Message) => {
+      if ( message.text !== '/start'){
+        await this.onBotMessage(message);
+      }
     });
 
     this.botClient.onText(/\/start/, async (message: Message, match: string[]) => {
@@ -37,8 +47,23 @@ export class WunderbotDispatcherService implements OnModuleInit{
     Logger.log('Dispatcher started', 'WunderbotDispatcherService');
   }
 
-  async onBotMessage(message){
-    await this.wunderlistService.addTaskFromTelegramMessage(message);
+  async onBotMessage(message: Message){
+    const tgUserId = message.from.id;
+    const user = await this.usersService.getUserByTelegramUserId(tgUserId);
+
+    try {
+      await this.wunderlistService.addTaskFromTelegramMessage(message, user);
+      await this.botClient.sendMessage(user.telegramChatId, taskAddedMessage);
+    }catch (error) {
+      try{
+        await this.botClient.sendMessage(user.telegramChatId, taskErrorMessage);
+        await this.botClient.sendMessage(user.telegramChatId, JSON.stringify(error));
+        console.error(error);
+      }catch (e) {
+        console.error(e);
+      }
+    }
+
   }
 
   async onAuthTokenReceived(tgUserId: number, wuAuthToken: string): Promise<any> {
@@ -47,7 +72,9 @@ export class WunderbotDispatcherService implements OnModuleInit{
     user.wunderlistToken = wuAuthToken;
     await this.usersService.saveUser(user);
 
-    await this.botClient.sendMessage(user.telegramChatId, wuAuthToken);
+    await this.botClient.sendMessage(user.telegramChatId, tokenReceivedMessage);
+    await this.botClient.sendMessage(user.telegramChatId, instructionsMessage);
+    await this.botClient.sendMessage(user.telegramChatId, contributeMessage);
   }
 
   async onBotStartMessage(message: Message): Promise<any> {
@@ -58,11 +85,10 @@ export class WunderbotDispatcherService implements OnModuleInit{
     user.telegramChatId = chatId;
     await this.usersService.saveUser(user);
 
-    if (!user.wunderlistToken){
-      const authUrl = this.wunderlistService.getAuthUrl(tgUserId);
+    const authUrl = this.wunderlistService.getAuthUrl(tgUserId);
 
-      await this.botClient.sendMessage(chatId, authUrl);
-    }
+    await this.botClient.sendMessage(chatId, welcomeMessage);
+    await this.botClient.sendMessage(chatId, authUrl);
 
   }
 

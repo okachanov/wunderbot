@@ -1,29 +1,34 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { User } from '../users/user.entity';
+import { Message } from 'node-telegram-bot-api';
+import * as WunderlistClient from 'wunderlist-api';
 
 @Injectable()
 export class WunderlistService {
 
-  private apiClient;
-
   constructor(@Inject('ConfigProvider') private readonly config){
   }
 
-  async getLists(){
-    const { body } = await this.apiClient.getLists();
+  async getLists(apiClient: WunderlistClient){
+    const { body } = await apiClient.getLists();
+    console.log(body);
     return JSON.parse(body);
   }
 
-  async addTask(task){
-
-    const { body } = await this.apiClient.createTask(task.list_id, task.title, task.completed, task.starred, task.due_date);
-    await this.apiClient.createNote(body.id, task.note);
-
-    return body;
-
+  getApiClientByUserToken(wunderlistToken: string): WunderlistClient{
+    return new WunderlistClient({
+      clientId: this.config.get(`wunderlist.appId`),
+      clientSecret: this.config.get(`wunderlist.appSecret`),
+      accessToken: wunderlistToken,
+    });
   }
 
-  async addTaskFromTelegramMessage(message){
-    const lists = await this.getLists();
+  async addTaskFromTelegramMessage(message: Message, user: User){
+
+    console.log(message, user);
+    const client = this.getApiClientByUserToken(user.wunderlistToken);
+
+    const lists = await this.getLists(client);
     const inboxList = lists.find(list => list.title === 'inbox');
     const messageText = message.text;
 
@@ -34,9 +39,17 @@ export class WunderlistService {
         completed: false,
         starred: false,
         note: messageText,
+        due_date: null,
       };
 
-      await this.addTask(task);
+      const { body } = await client.createTask(task.list_id, task.title, task.completed, task.starred, task.due_date);
+      console.log('body', body);
+
+      const result = await client.createNote(body.id, task.note);
+      console.log('result', result);
+
+      return body;
+
     }
   }
 

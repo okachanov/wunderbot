@@ -20,17 +20,28 @@ export class WunderlistController {
     const tgUserId = query.state;
     const authCode = query.code;
 
-    const response = await superagent
-      .post(`https://www.wunderlist.com/oauth/access_token`)
-      .send({
-        client_id: this.config.get(`wunderlist.appId`),
-        client_secret: this.config.get(`wunderlist.appSecret`),
-        code: authCode,
-      });
+    try {
+      const response = await superagent
+        .post(`https://www.wunderlist.com/oauth/access_token`)
+        .send({
+          client_id: this.config.get(`wunderlist.appId`),
+          client_secret: this.config.get(`wunderlist.appSecret`),
+          code: authCode,
+        });
 
-    const { body: {access_token} } = response;
+      const { body: {access_token} } = response;
 
-    return this.ee.emit(`access_token_received`, tgUserId, access_token);
+      if (access_token){
+        this.ee.emit(`access_token_received`, tgUserId, access_token);
+        return "Token received. You can close this tab";
+      }else {
+        throw new Error(`API returned no access_token`);
+      }
+
+    }catch (e) {
+      console.error(e);
+      return e;
+    }
 
   }
 

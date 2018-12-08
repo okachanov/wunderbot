@@ -54,8 +54,7 @@ export class DispatchError implements ExceptionFilter {
     }
 
     /* tslint:disable:no-console */
-    console.dir(exception.message);
-    console.dir(exception.stack);
+    console.error(exception.message);
 
     return {
       errorMessage: exception.message.error,
