@@ -1,5 +1,6 @@
 # Wunderbot
 Telegram to Wunderlist integration bot.
+http://telegram.me/telewunderbot
 
 ## Required
 * PostgreSQL
